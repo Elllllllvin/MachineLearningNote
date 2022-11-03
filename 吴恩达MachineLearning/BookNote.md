@@ -62,3 +62,61 @@ plt.show()
 plt.plot(x, y, format_string, \*\*kwargs)
 
 其中 x，y 分别为 x，y 轴数据，可为列表或数组；format_string 控制曲线的格式字符串（颜色、风格、标记等），label 可以为该曲线，添加标签配合 legend 可以显示在左上角
+
+## 线性回归模型
+
+```Python []
+from sklearn import linear_model
+model = linear_model.LinearRegression() #线性回归模型
+model.fit(X, Y)
+#X,Y均为处理过的矩阵，X为n*m矩阵，n个样本*m条特征；Y为结果n*1矩阵
+x = np.array(X[:, 1].A1)        #x横坐标的值（X的第1列元素化为一个一元矩阵
+        #       .A1的作用是把矩阵化为扁平的一元矩阵
+y = model.predict(X).flatten()  #求得结果y（纵坐标的值
+                #  .flatten()是把二维数组压成一维数组（必须是numpy数组）
+                #因为model.predict(X)仍是n*1的二维矩阵
+```
+
+## 3D 拟合平面
+
+```Python []
+# 画出拟合平面
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure()
+ax = Axes3D(fig)
+X_ = np.arange(mins[0], maxs[0]+1, 1)
+Y_ = np.arange(mins[1], maxs[1]+1, 1)
+X_, Y_ = np.meshgrid(X_, Y_)
+Z_ = transform_g[0,0] + transform_g[0,1] * X_ + transform_g[0,2] * Y_
+
+# 手动设置角度
+ax.view_init(elev=25, azim=125)
+
+ax.set_xlabel('Size')
+ax.set_ylabel('Bedrooms')
+ax.set_zlabel('Price')
+
+ax.plot_surface(X_, Y_, Z_, rstride=1, cstride=1, color='red')
+
+ax.scatter(data_[:, 0], data_[:, 1], data_[:, 2])
+plt.show()
+
+```
+
+# Exercise2 Logical Regression
+
+[scipy.optimize 优化器的各种使用](https://blog.csdn.net/jiang425776024/article/details/87885969)
+
+```Python []
+#使用两种函数来拟合优化θ，结果非常近似
+#1.
+import scipy.optimize as opt
+result = opt.fmin_tnc(func=cost, x0=theta, fprime=gradient, args=(X, Y))
+                    #定义好代价函数，theta，梯度下降函数，数据集参数后，拟合出最优的θ
+result
+
+#2.
+res = opt.minimize(fun=cost, x0=np.array(theta), args=(X, np.array(Y)), method='Newton-CG', jac=gradient)
+#opt.minimize根据method参数的不同有多种拟合方法，这里使用牛顿共轭梯度法拟合函数
+res
+```
